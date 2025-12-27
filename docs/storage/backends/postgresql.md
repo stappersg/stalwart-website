@@ -59,3 +59,17 @@ allow-invalid-certs = false
 [store."postgresql".pool]
 max-connections = 10
 ```
+
+## FTS Limitations
+
+PostgreSQL provides a built-in full text search engine based on `tsvector` and `tsquery`. While this is a reliable and well-integrated solution for many applications, it has important [limitations](https://www.postgresql.org/docs/current/textsearch-limitations.html) that are particularly relevant when indexing email content.
+
+The most significant constraint is that the total size of a `tsvector`, including both lexemes and positional information, must not exceed **1 megabyte**. Because positional data is stored alongside the indexed terms, the amount of actual text that can be indexed is substantially less than 1 MB, especially for natural language content with many tokens and repeated words.
+
+For email workloads, this limitation directly affects message bodies and attachments, which can easily exceed the effective size limit when indexed as full text. To ensure indexing remains reliable and does not exceed PostgreSQL’s hard limits, Stalwart truncates content before it is converted into a `tsvector`. Message bodies are truncated to **650 KB**, and attachments are also truncated to **650 KB total**, combined across all attachments in a message. In practical terms, only the first 650 KB of the message body is indexed, and only the first 650 KB of all attachments combined are indexed. Any content beyond these limits is not searchable.
+
+This truncation is a deliberate and conservative choice that leaves sufficient room for lexeme positions and avoids indexing failures caused by exceeding PostgreSQL’s maximum `tsvector` size. For most typical email messages, this behavior is not noticeable and does not materially affect search quality.
+
+However, in environments where messages frequently contain very large bodies or where full search coverage of large attachments is required, this limitation may be problematic. In such cases, administrators should consider using a different [full text search backend](/docs/storage/fts) that does not impose strict per-document size limits.
+
+These constraints are inherent to PostgreSQL’s full text search implementation and should be taken into account when deciding whether PostgreSQL is an appropriate full text search backend for email workloads.

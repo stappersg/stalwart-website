@@ -32,6 +32,28 @@ allow-invalid-certs = true
 
 ## Limitations
 
+### Number of Results
+
+By default, Meilisearch limits the total number of documents returned by a search query to **1,000 results**. This limit applies even if more documents match the query. For many use cases, this default is not an issue. Typical search interfaces only display a small subset of results and rely on pagination, making it unnecessary to retrieve every matching document.
+
+However, this behavior can be problematic for **email search workloads**. IMAP and JMAP clients commonly request **all matching message IDs** for a given search expression, not just the first page of results. When the number of matching messages exceeds Meilisearch’s default limit, the result set will be **silently truncated** to the first 1,000 documents. As a result, clients may miss valid matches without receiving any indication that the result set is incomplete.
+
+#### Increasing the Limit
+
+This limit can be raised by increasing the `maxTotalHits` setting in Meilisearch. Increasing `maxTotalHits` allows Meilisearch to return a larger number of matching document IDs, which is often required to correctly support IMAP and JMAP search semantics. To change this setting, you will need to update the [Meilisearch server configuration](https://www.meilisearch.com/docs/reference/api/settings#pagination-object) directly, as it is not configurable through Stalwart.
+
+#### Performance Considerations
+
+Meilisearch explicitly warns about increasing this value:
+
+> Setting `maxTotalHits` to a value higher than the default will negatively impact search performance. Setting `maxTotalHits` to values over **20,000** may result in queries taking seconds to complete.
+
+Administrators should carefully balance correctness and performance when tuning this setting. For mailboxes with very large folders or frequent broad searches, raising `maxTotalHits` may be necessary to avoid truncated results, but doing so can significantly increase query latency and resource usage.
+
+This limitation is inherent to Meilisearch’s pagination model and should be considered when evaluating it as a full-text search backend for large or heavily queried mail stores.
+
+### Query Mapping
+
 Meilisearch separates search expressions into two fundamentally different components:
 
 * **`q`**: A full-text search query, applied across one or more searchable text fields.

@@ -60,3 +60,15 @@ timeout = "15s"
 max-connections = 10
 min-connections = 5
 ```
+
+## FTS Limitations
+
+MySQL’s built-in full text search is a lightweight feature designed primarily for simple keyword matching. While it can be sufficient for basic search use cases, it has several inherent limitations that are important to understand when using it as a full text search backend for email.
+
+One significant limitation is that MySQL full text search does not support **multiple languages within the same indexed column**. A full text index is tied to a single parser and language configuration, which means that messages containing mixed languages cannot be tokenized or ranked correctly. In mail environments where users regularly exchange messages in different languages, this can lead to inconsistent or incomplete search results.
+
+MySQL full text search also does **not support stemming**. Words are indexed and matched in their exact forms, so different grammatical variants of the same word (such as singular versus plural or different verb tenses) are treated as unrelated terms. As a result, searches are less tolerant of natural language variation and may miss relevant messages unless users search for the exact word forms present in the message.
+
+Another important constraint is that **words shorter than three characters are not indexed** by default. Common short words, abbreviations, and identifiers—many of which are common in email content—will therefore not be searchable at all. This can be particularly noticeable when searching for short names, acronyms, or codes.
+
+Taken together, these limitations can significantly affect search quality and recall. If accurate, language-aware, and user-friendly search behavior is a priority for your deployment, it is strongly recommended to consider using a different [full text search backend](/docs/storage/fts) that provides better linguistic support and more robust indexing capabilities.

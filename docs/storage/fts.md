@@ -30,6 +30,21 @@ It is important to note that when [encryption at rest](/docs/encryption/overview
 
 :::
 
+### Limitations
+
+All full text search (FTS) backends involve tradeoffs. No single engine is optimal for every deployment, and each supported backend makes different design choices that affect scalability, accuracy, resource usage, and query expressiveness. When selecting a full text search backend, administrators should carefully consider these limitations in the context of their expected mail volume, query patterns, and operational constraints.
+
+The following table summarizes the primary limitations of each full text search engine supported by Stalwart:
+
+| Full Text Search Engine | Key Limitations                                                                                |
+| ----------------------- | ---------------------------------------------------------------------------------------------- |
+| Elasticsearch           | Memory intensive and Java based, which can increase operational complexity and resource usage. |
+| Meilisearch             | Single-node architecture and [limited support](/docs/storage/backends/meilisearch#limitations) for complex, deeply nested query expressions.     |
+| PostgreSQL              | Maximum indexable email content size of approximately [650 KB per message](/docs/storage/backends/postgresql#fts-limitations).                      |
+| MySQL                   | [No stemming support](/docs/storage/backends/mysql#fts-limitations) and no support for indexing multiple languages within the same column.     |
+| Internal FTS            | Higher write amplification compared to external full text search backends.                     |
+
+These limitations are not defects but consequences of architectural and design decisions made by each engine. If search accuracy, language support, scalability, or operational simplicity are critical requirements, you may need to evaluate multiple backends to determine which best aligns with your deployment needs.
 
 ## Configuration
 
