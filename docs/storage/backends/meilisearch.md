@@ -14,6 +14,8 @@ The following configuration settings are available for Meilisearch, which are sp
 - `url`: The URL of the Meilisearch server.
 - `auth.token`: The API key used for authentication.
 - `tls.allow-invalid-certs`: Determines whether to allow connections with invalid TLS certificates. This is a boolean setting, and setting it to `true` can be useful in development or testing environments.
+- `task.poll-interval`: The interval (in milliseconds) at which to poll for task completion. Default is `500ms`.
+- `task.poll-retries`: The number of times to retry polling for task completion. Default is `60`.
 
 Example:
 
@@ -21,6 +23,10 @@ Example:
 [store."meilisearch"]
 type = "meilisearch"
 url = "https://localhost:9200"
+
+[store."meilisearch".task]
+poll-interval = "500ms"
+poll-retries = 60
 
 [store."meilisearch".auth]
 token = "API_KEY_HERE"
