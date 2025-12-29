@@ -13,7 +13,6 @@ Running Stalwart in a Kubernetes environment enables scalable and resilient depl
 In Kubernetes, liveness and readiness probes are mechanisms designed to ensure that containers are running properly and are ready to handle requests. The liveness probe checks if an application is running and if it fails, Kubernetes will kill the container and restart it, assuming something has gone wrong. This feature helps recover from situations where an application might be running but is stuck or unable to continue its work.
 
 On the other hand, the readiness probe determines if an application is ready to start accepting traffic. When the readiness probe fails, Kubernetes will temporarily remove the pod from its service endpoints, preventing it from receiving any traffic. This is particularly useful for scenarios where an application might need some initialization time before it can serve requests or when it needs to shut down gracefully.
-Stalwart Endpoints
 
 In Stalwart, the endpoints for these probes are predefined as follows: the liveness endpoint is located at `/healthz/live`, and the readiness endpoint can be found at `/healthz/ready`. These endpoints can be configured in your Kubernetes deployment files to ensure that the Stalwart containers are properly monitored and managed.
 
