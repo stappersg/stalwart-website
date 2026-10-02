@@ -101,7 +101,7 @@ Automate copying Caddy-issued certificates into Stalwart's certificate directory
 
 As an alternative to cron, a systemd path unit can watch the Caddy certificate file, copy the renewed files into place, and trigger a hot reload on Stalwart:
 
-*stalwart.path:*
+*caddycertstalwart.path:*
 
 ```
 [Unit]
@@ -114,7 +114,7 @@ PathModified=/var/lib/caddy/.local/share/caddy/certificates/acme-v02.api.letsenc
 WantedBy=multi-user.target
 ```
 
-*stalwart.service:*
+*caddycertstalwart.service:*
 
 ```
 [Unit]
